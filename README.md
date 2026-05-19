@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="icons/icon128.png" alt="RateMate" width="128" />
   <h1>RateMate</h1>
   <p><strong>Dynamic Currency Converter — Chrome Extension</strong></p>
   <p>
