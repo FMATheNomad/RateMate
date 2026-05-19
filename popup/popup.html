@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RateMate</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .header {
+      background: linear-gradient(135deg, #059669, #34d399);
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+    .header h1 { font-size: 18px; font-weight: 800; }
+    .header p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+    .body { padding: 16px; }
+    .section { margin-bottom: 16px; }
+    .section-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      color: #64748b; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: white; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .toggle-row .label { font-size: 14px; font-weight: 500; }
+    .toggle-row .hint { font-size: 11px; color: #94a3b8; }
+    .switch {
+      position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background: #cbd5e1; transition: 0.3s; border-radius: 24px;
+    }
+    .slider:before {
+      content: ""; position: absolute; height: 18px; width: 18px;
+      left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%;
+    }
+    .switch input:checked + .slider { background: #059669; }
+    .switch input:checked + .slider:before { transform: translateX(20px); }
+    select {
+      width: 100%; padding: 10px 12px; font-size: 14px;
+      border: 1px solid #e2e8f0; border-radius: 8px; background: white;
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .status-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 12px; font-size: 13px;
+    }
+    .status-card .row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .status-card .label { color: #64748b; }
+    .status-card .value { font-weight: 500; }
+    .status-card .value.active { color: #059669; }
+    .status-card .value.inactive { color: #94a3b8; }
+    .footer { padding: 10px 16px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+    .empty-state { text-align: center; padding: 20px 0; color: #94a3b8; font-size: 13px; }
+    .empty-state i { font-size: 32px; margin-bottom: 8px; color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fa fa-exchange-alt"></i> RateMate</h1>
+    <p>Dynamic Currency Converter</p>
+  </div>
+
+  <div class="body">
+    <div class="section">
+      <div class="section-label">Conversion</div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">Auto-Convert</div>
+          <div class="hint" id="toggleHint">Converting prices on this page</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleSwitch" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Target Currency</div>
+      <select id="currencySelect">
+        <option value="IDR">🇮🇩 IDR - Indonesian Rupiah</option>
+        <option value="USD">🇺🇸 USD - US Dollar</option>
+        <option value="EUR">🇪🇺 EUR - Euro</option>
+        <option value="GBP">🇬🇧 GBP - British Pound</option>
+        <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+        <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+        <option value="MYR">🇲🇾 MYR - Malaysian Ringgit</option>
+        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+        <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+        <option value="KRW">🇰🇷 KRW - South Korean Won</option>
+        <option value="THB">🇹🇭 THB - Thai Baht</option>
+        <option value="PHP">🇵🇭 PHP - Philippine Peso</option>
+        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Page Status</div>
+      <div class="status-card" id="statusCard">
+        <div class="empty-state">
+          <i class="fa fa-search"></i>
+          <p>No price data yet. Open an e-commerce page and click refresh.</p>
+        </div>
+      </div>
+      <button id="refreshBtn" style="width:100%;margin-top:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:white;font-size:13px;cursor:pointer;color:#475569;">
+        <i class="fa fa-sync-alt"></i> Refresh Page Info
+      </button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Powered by Frankfurter API &middot; Rates update hourly
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
